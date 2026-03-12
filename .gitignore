@@ -1,0 +1,38 @@
+# Node / Angular dependencies and caches
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.cache/
+frontend/.vite/
+
+# IDEs / editors
+.vscode/
+.idea/
+
+# macOS / Windows / Linux junk files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# .NET / Visual Studio / Rider
+**/bin/
+**/obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+
+# Environment and secrets
+appsettings.Development.json
+.env
+.env.*
+
+# Logs
+*.log
+
+# Docker / containers
+docker-compose.override.yml
+
+# Misc caches
+.cache/
