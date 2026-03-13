@@ -43,47 +43,47 @@ export class TurnoService {
   }
 }
 
-// ─── ProfesionalService ──────────────────────────────────────
-@Injectable({ providedIn: 'root' })
-export class ProfesionalService {
-  private base = `${environment.apiUrl}/profesionales`;
+  // ─── ProfesionalService ──────────────────────────────────────
+  @Injectable({ providedIn: 'root' })
+  export class ProfesionalService {
+    private base = `${environment.apiUrl}/api/profesionales`;
 
-  constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) {}
 
-  getAll(categoriaId?: number): Observable<Profesional[]> {
-    let params = new HttpParams();
-    if (categoriaId) params = params.set('categoriaId', categoriaId);
-    return this.http.get<Profesional[]>(this.base, { params });
+    getAll(categoriaId?: number): Observable<Profesional[]> {
+      let params = new HttpParams();
+      if (categoriaId) params = params.set('categoriaId', categoriaId);
+      return this.http.get<Profesional[]>(this.base, { params });
+    }
+
+    getById(id: number): Observable<Profesional> {
+      return this.http.get<Profesional>(`${this.base}/${id}`);
+    }
+
+    crear(req: CrearProfesionalRequest): Observable<Profesional> {
+      return this.http.post<Profesional>(this.base, req);
+    }
+
+    actualizar(id: number, req: CrearProfesionalRequest): Observable<Profesional> {
+      return this.http.put<Profesional>(`${this.base}/${id}`, req);
+    }
+
+    desactivar(id: number): Observable<void> {
+      return this.http.delete<void>(`${this.base}/${id}`);
+    }
   }
 
-  getById(id: number): Observable<Profesional> {
-    return this.http.get<Profesional>(`${this.base}/${id}`);
+  // ─── CategoriaService ────────────────────────────────────────
+  @Injectable({ providedIn: 'root' })
+  export class CategoriaService {
+    private base = `${environment.apiUrl}/api/categorias`;
+
+    constructor(private http: HttpClient) {}
+
+    getAll(): Observable<Categoria[]> {
+      return this.http.get<Categoria[]>(this.base);
+    }
   }
-
-  crear(req: CrearProfesionalRequest): Observable<Profesional> {
-    return this.http.post<Profesional>(this.base, req);
-  }
-
-  actualizar(id: number, req: CrearProfesionalRequest): Observable<Profesional> {
-    return this.http.put<Profesional>(`${this.base}/${id}`, req);
-  }
-
-  desactivar(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/${id}`);
-  }
-}
-
-// ─── CategoriaService ────────────────────────────────────────
-@Injectable({ providedIn: 'root' })
-export class CategoriaService {
-  private base = `${environment.apiUrl}/categorias`;
-
-  constructor(private http: HttpClient) {}
-
-  getAll(): Observable<Categoria[]> {
-    return this.http.get<Categoria[]>(this.base);
-  }
-}
 
 // ─── EstadisticaService ──────────────────────────────────────
 @Injectable({ providedIn: 'root' })
