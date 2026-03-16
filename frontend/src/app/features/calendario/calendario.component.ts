@@ -17,18 +17,22 @@ const HORAS = ['08:00', '09:00', '10:00', '11:00'];
         <!-- Header controles -->
         <div class="cal-header">
           <div class="cal-title-row">
-            <h1>Calendario de Turnos</h1>
-            <button class="btn-nuevo" (click)="abrirModalNuevo()">➕ Nuevo turno</button>
+           <h1>Calendario de Turnos</h1>
+             <button *ngIf="!isProfesional()" class="btn-nuevo" (click)="abrirModalNuevo()">➕ Nuevo turno</button>
           </div>
 
-          <div class="cal-controls">
-            <!-- Navegación de semana -->
-            <div class="week-nav">
-              <button class="btn-nav" (click)="semanaAnterior()">◀</button>
-              <span class="week-label">{{ semanaLabel() }}</span>
-              <button class="btn-nav" (click)="semanaSiguiente()">▶</button>
-              <button class="btn-today" (click)="irAHoy()">Hoy</button>
-            </div>
+           <div class="cal-controls">
+             <!-- Navegación de semana -->
+             <div class="week-nav">
+               <button class="btn-nav" (click)="semanaAnterior()">◀</button>
+               <span class="week-label">{{ semanaLabel() }}</span>
+               <button class="btn-nav" (click)="semanaSiguiente()">▶</button>
+               <button class="btn-today" (click)="irAHoy()">Hoy</button>
+             </div>
+             <!-- Nuevo turno button (only for secretary/admin) -->
+             <div *ngIf="!isProfesional()" class="new-turno-btn">
+               <button class="btn-nuevo" (click)="abrirModalNuevo()">➕ Nuevo turno</button>
+             </div>
 
             <!-- Filtro de categoría (no para profesional) -->
             @if (!isProfesional()) {
@@ -81,9 +85,9 @@ const HORAS = ['08:00', '09:00', '10:00', '11:00'];
                       </div>
                     }
                     @if (puedeAgregarEnCelda(dia.fecha, hora)) {
-                      <div class="add-slot" (click)="abrirModalEnCelda(dia.fecha, hora)">
-                        <span>+</span>
-                      </div>
+                       <div class="add-slot" *ngIf="!isProfesional() && puedeAgregarEnCelda(dia.fecha, hora)" (click)="abrirModalEnCelda(dia.fecha, hora)">
+                         <span>+</span>
+                       </div>
                     }
                   </div>
                 </div>
