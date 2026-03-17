@@ -13,6 +13,14 @@ const CAT_COLORS: Record<string, { fill: string; stroke: string; light: string }
 };
 const DEFAULT_COLOR = { fill: '#6366f1', stroke: '#4f46e5', light: '#e0e7ff' };
 
+// Mapa de abreviaturas para los KPIs (definido fuera para ser estático)
+const CAT_ABBREVIATIONS: Record<string, string> = {
+  'Traumatología': 'Traumato',
+  'Cardio Respiratorio': 'Cardio',
+  'Neurología': 'Neuro',
+  'Dermatofuncional': 'Dermato',
+};
+
 function catColor(nombre: string) {
   return CAT_COLORS[nombre] ?? DEFAULT_COLOR;
 }
@@ -62,34 +70,53 @@ function catColor(nombre: string) {
           <!-- ── KPI CARDS ── -->
           <div class="kpi-grid">
             <div class="kpi-card">
-              <div class="kpi-icon" style="background:#dbeafe">📅</div>
-              <div class="kpi-body">
-                <div class="kpi-value">{{ stats()!.totalGeneral }}</div>
-                <div class="kpi-label">Total de turnos</div>
+              <div class="kpi-header">
+                <div class="kpi-icon blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <div>
+                  <div class="kpi-value">{{ stats()!.totalGeneral }}</div>
+                  <div class="kpi-label">Total de turnos</div>
+                </div>
               </div>
               <div class="kpi-trend blue">En el período</div>
             </div>
+            
             <div class="kpi-card">
-              <div class="kpi-icon" style="background:#dcfce7">✅</div>
-              <div class="kpi-body">
-                <div class="kpi-value" style="color:#16a34a">{{ stats()!.totalActivos }}</div>
-                <div class="kpi-label">Activos</div>
+              <div class="kpi-header">
+                <div class="kpi-icon green">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M20 6L9 17l-5-5"/></svg>
+                </div>
+                <div>
+                  <div class="kpi-value" style="color:var(--color-success)">{{ stats()!.totalActivos }}</div>
+                  <div class="kpi-label">Activos</div>
+                </div>
               </div>
               <div class="kpi-trend green">{{ tasaAsistencia() }}% efectividad</div>
             </div>
+            
             <div class="kpi-card">
-              <div class="kpi-icon" style="background:#fee2e2">❌</div>
-              <div class="kpi-body">
-                <div class="kpi-value" style="color:#dc2626">{{ stats()!.totalCancelados }}</div>
-                <div class="kpi-label">Cancelados</div>
+              <div class="kpi-header">
+                <div class="kpi-icon red">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </div>
+                <div>
+                  <div class="kpi-value" style="color:var(--color-danger)">{{ stats()!.totalCancelados }}</div>
+                  <div class="kpi-label">Cancelados</div>
+                </div>
               </div>
               <div class="kpi-trend red">{{ tasaCancelacion() }}% cancelación</div>
             </div>
+            
             <div class="kpi-card">
-              <div class="kpi-icon" style="background:#fef3c7">⭐</div>
-              <div class="kpi-body">
-                <div class="kpi-value" style="color:#d97706">{{ categoriaTop() }}</div>
-                <div class="kpi-label">Categoría más demandada</div>
+              <div class="kpi-header">
+                <div class="kpi-icon orange">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </div>
+                <div class="kpi-text-content">
+                  <div class="kpi-value-categoria" style="color:var(--color-warning)">{{ abbreviateCategory(categoriaTop()) }}</div>
+                  <div class="kpi-label">Categoría más demandada</div>
+                </div>
               </div>
               <div class="kpi-trend orange">{{ cantidadTop() }} turnos</div>
             </div>
@@ -247,7 +274,10 @@ function catColor(nombre: string) {
               <div class="profesionales-grid">
                 <!-- Más cancelados -->
                 <div class="prof-group">
-                  <h3>⚠️ Más cancelados</h3>
+                  <h3>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                    Más cancelados
+                  </h3>
                   @if (stats()!.topProfesionalesCancelados.length > 0) {
                     @for (pro of stats()!.topProfesionalesCancelados; track pro.id; let i = $index) {
                       <div class="prof-item">
@@ -263,13 +293,16 @@ function catColor(nombre: string) {
 
                 <!-- Menos cancelados (más eficientes) -->
                 <div class="prof-group">
-                  <h3>✅ Menos cancelados</h3>
+                  <h3>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    Menos cancelados
+                  </h3>
                   @if (stats()!.topProfesionalesActivos.length > 0) {
                     @for (pro of stats()!.topProfesionalesActivos; track pro.id; let i = $index) {
                       <div class="prof-item">
                         <span class="prof-rank">#{{ i + 1 }}</span>
                         <span class="prof-name">{{ pro.nombreCompleto }}</span>
-                        <span class="prof-count green">{{ pro.cantidad }} cancelados</span>
+                        <span class="prof-count green">{{ pro.cantidad }} activos</span>
                       </div>
                     }
                   } @else {
@@ -291,71 +324,121 @@ function catColor(nombre: string) {
   `,
   styles: [`
     /* ── Layout ── */
-    .est-page { max-width: 1200px; }
+    .est-page { max-width: 1200px; margin: 0 auto; }
     .page-header {
       display: flex; justify-content: space-between; align-items: flex-start;
       margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
     }
-    h1 { color: #1e3a5f; margin: 0 0 0.25rem; font-size: 1.75rem; }
-    .subtitle { color: #666; margin: 0; font-size: 0.9rem; }
-    h2 { color: #1e3a5f; margin: 0; font-size: 1rem; }
+    h1 { color: var(--color-primary); margin: 0 0 0.25rem; font-size: 2rem; font-weight: 700; }
+    .subtitle { color: var(--color-text-muted); margin: 0; font-size: 0.95rem; }
+    h2 { color: var(--color-primary); margin: 0; font-size: 1.1rem; font-weight: 600; }
     .date-filters {
       display: flex; align-items: flex-end; gap: 0.75rem; flex-wrap: wrap;
     }
     .filter-group { display: flex; flex-direction: column; gap: 0.3rem; }
-    .filter-group label { font-size: 0.78rem; font-weight: 600; color: #666; }
+    .filter-group label { font-size: 0.78rem; font-weight: 600; color: var(--color-text-muted); }
     .filter-group input {
-      padding: 0.5rem 0.75rem; border: 1.5px solid #ddd;
-      border-radius: 7px; font-size: 0.9rem;
+      padding: 0.55rem 0.75rem; border: 1px solid var(--color-border);
+      border-radius: var(--radius-md); font-size: 0.9rem;
+      background: var(--color-surface); color: var(--color-text);
     }
-    .filter-group input:focus { outline: none; border-color: #2e75b6; }
+    .filter-group input:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
     .btn-refresh {
       display: flex; align-items: center; gap: 0.4rem;
-      background: #2e75b6; color: white; border: none;
-      padding: 0.55rem 1.1rem; border-radius: 7px;
+      background: var(--color-accent); color: white; border: none;
+      padding: 0.6rem 1.2rem; border-radius: var(--radius-md);
       font-weight: 600; font-size: 0.9rem; cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s;
     }
-    .btn-refresh:hover { background: #1e3a5f; }
+    .btn-refresh:hover { background: var(--color-accent-dark); transform: translateY(-1px); }
     .refresh-icon { font-size: 1.1rem; }
 
     /* ── KPI Cards ── */
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1rem; margin-bottom: 1.5rem;
     }
     .kpi-card {
-      background: white; border-radius: 14px; padding: 1.25rem;
-      display: flex; align-items: center; gap: 1rem;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-      transition: transform 0.15s, box-shadow 0.15s;
+      background: var(--color-surface); border-radius: var(--radius-lg); padding: 1rem;
+      box-shadow: var(--shadow-sm); border: 1px solid var(--color-border);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100px; /* Altura mínima para evitar compactación */
     }
-    .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.1); }
+    .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    
+    .kpi-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    
     .kpi-icon {
-      width: 52px; height: 52px; border-radius: 12px;
+      width: 36px; height: 36px; border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem; flex-shrink: 0;
+      flex-shrink: 0;
     }
-    .kpi-body { flex: 1; }
-    .kpi-value { font-size: 2rem; font-weight: 800; color: #1e3a5f; line-height: 1; }
-    .kpi-label { font-size: 0.78rem; color: #777; margin-top: 0.2rem; }
+    .kpi-icon svg { width: 18px; height: 18px; }
+    
+    .kpi-value { 
+      font-size: 1.5rem; 
+      font-weight: 800; 
+      color: var(--color-primary); 
+      line-height: 1.1;
+      margin-bottom: 0.1rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    /* Estilo específico para la categoría abreviada */
+    .kpi-value-categoria {
+      font-size: 1.2rem;
+      font-weight: 800; 
+      color: var(--color-warning); 
+      line-height: 1.1;
+      margin-bottom: 0.1rem;
+    }
+    
+    .kpi-label { 
+      font-size: 0.8rem; 
+      color: var(--color-text-muted); 
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .kpi-text-content {
+      display: flex;
+      flex-direction: column;
+      min-width: 0; /* Permite que el texto se contenga */
+    }
+    
     .kpi-trend {
-      font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.5rem;
-      border-radius: 20px; white-space: nowrap;
+      font-size: 0.7rem; font-weight: 600; padding: 0.25rem 0.5rem;
+      border-radius: 20px; white-space: nowrap; 
+      display: inline-block;
+      margin-top: auto; /* Empuja hacia abajo */
+      align-self: flex-start;
     }
-    .kpi-trend.blue   { background: #dbeafe; color: #1e40af; }
-    .kpi-trend.green  { background: #dcfce7; color: #166534; }
-    .kpi-trend.red    { background: #fee2e2; color: #991b1b; }
-    .kpi-trend.orange { background: #fef3c7; color: #92400e; }
+    .kpi-trend.blue   { background: #eff6ff; color: var(--color-accent); }
+    .kpi-trend.green  { background: #f0fdf4; color: var(--color-success); }
+    .kpi-trend.red    { background: #fef2f2; color: var(--color-danger); }
+    .kpi-trend.orange { background: #fffbeb; color: var(--color-warning); }
 
     /* ── Chart containers ── */
     .charts-row {
       display: flex; gap: 1.25rem; margin-bottom: 1.25rem; flex-wrap: wrap;
     }
     .chart-card {
-      background: white; border-radius: 14px; padding: 1.5rem;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06); display: flex; flex-direction: column;
+      background: var(--color-surface); border-radius: var(--radius-lg); padding: 1.5rem;
+      box-shadow: var(--shadow-sm); border: 1px solid var(--color-border);
+      display: flex; flex-direction: column;
     }
     .chart-card.wide   { flex: 2; min-width: 340px; }
     .chart-card.narrow { flex: 1; min-width: 240px; }
@@ -364,29 +447,29 @@ function catColor(nombre: string) {
       display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 1.25rem;
     }
-    .chart-sub { font-size: 0.78rem; color: #999; }
+    .chart-sub { font-size: 0.8rem; color: var(--color-text-muted); }
 
     /* ── Barras horizontales ── */
     .bar-chart-area { display: flex; flex-direction: column; gap: 1rem; }
     .hbar-row { display: flex; align-items: center; gap: 0.75rem; }
     .hbar-label {
-      min-width: 165px; font-size: 0.83rem; font-weight: 600; color: #444;
+      min-width: 140px; font-size: 0.85rem; font-weight: 600; color: var(--color-text);
       white-space: nowrap;
     }
     .hbar-track {
-      flex: 1; height: 32px; background: #f0f4f8;
-      border-radius: 16px; overflow: hidden;
+      flex: 1; height: 28px; background: var(--color-bg);
+      border-radius: 14px; overflow: hidden;
     }
     .hbar-fill {
-      height: 100%; border-radius: 16px;
+      height: 100%; border-radius: 14px;
       display: flex; align-items: center; padding-left: 0.75rem;
       transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
       min-width: 0;
     }
-    .hbar-val { color: white; font-size: 0.8rem; font-weight: 700; }
+    .hbar-val { color: white; font-size: 0.8rem; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     .hbar-pct {
-      min-width: 42px; text-align: right;
-      font-size: 0.82rem; font-weight: 600; color: #555;
+      min-width: 45px; text-align: right;
+      font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted);
     }
 
     /* ── Gráfico dona ── */
@@ -398,20 +481,20 @@ function catColor(nombre: string) {
     .donut-seg { transition: opacity 0.2s; cursor: pointer; }
     .donut-seg:hover { opacity: 0.85; }
     .donut-center-val {
-      font-size: 28px; font-weight: 800; fill: #1e3a5f;
-      font-family: 'Segoe UI', sans-serif;
+      font-size: 28px; font-weight: 800; fill: var(--color-primary);
+      font-family: var(--font-sans);
     }
     .donut-center-lbl {
-      font-size: 11px; fill: #888;
-      font-family: 'Segoe UI', sans-serif;
+      font-size: 11px; fill: var(--color-text-muted);
+      font-family: var(--font-sans);
     }
     .donut-legend { width: 100%; display: flex; flex-direction: column; gap: 0.4rem; }
     .legend-item {
       display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem;
     }
     .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .legend-name { flex: 1; color: #444; }
-    .legend-val { font-weight: 700; color: #1e3a5f; }
+    .legend-name { flex: 1; color: var(--color-text); }
+    .legend-val { font-weight: 700; color: var(--color-primary); }
 
     /* ── Barras verticales SVG ── */
     .vbar-chart { flex: 1; display: flex; flex-direction: column; }
@@ -419,41 +502,18 @@ function catColor(nombre: string) {
     .vbar-rect { transition: opacity 0.2s; cursor: pointer; }
     .vbar-rect:hover { opacity: 0.8; }
     .axis-label {
-      font-size: 11px; fill: #888;
-      font-family: 'Segoe UI', sans-serif;
+      font-size: 11px; fill: var(--color-text-muted);
+      font-family: var(--font-sans);
     }
     .bar-val-label {
-      font-size: 12px; font-weight: 700; fill: #1e3a5f;
-      font-family: 'Segoe UI', sans-serif;
+      font-size: 12px; font-weight: 700; fill: var(--color-primary);
+      font-family: var(--font-sans);
     }
     .cap-note {
-      font-size: 0.75rem; color: #888; text-align: center;
+      font-size: 0.75rem; color: var(--color-text-muted); text-align: center;
       margin-top: 0.5rem; padding-top: 0.5rem;
-      border-top: 1px solid #f0f0f0;
+      border-top: 1px solid var(--color-border);
     }
-
-    /* ── Tabla detallada ── */
-    .detail-table-wrap { overflow-x: auto; margin-bottom: 1rem; }
-    .detail-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-    .detail-table th {
-      background: #f8fafc; color: #555; font-weight: 600;
-      padding: 0.6rem 0.75rem; text-align: left;
-      border-bottom: 2px solid #e8edf2;
-    }
-    .detail-table td {
-      padding: 0.6rem 0.75rem; border-bottom: 1px solid #f0f4f8;
-    }
-    .detail-table tfoot td {
-      border-top: 2px solid #e8edf2; border-bottom: none;
-      background: #f8fafc;
-    }
-    .cat-name-cell { display: flex; align-items: center; gap: 0.5rem; }
-    .cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .num-cell { text-align: right; font-weight: 600; color: #1e3a5f; }
-    .mini-bar-track {
-      height: 8px; background: #f0f4f8; border-radius: 4px; overflow: hidden;
-    }
-    .mini-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
 
     /* ── Top Profesionales ── */
     .profesionales-grid {
@@ -463,84 +523,68 @@ function catColor(nombre: string) {
     }
     .prof-group h3 {
       font-size: 0.85rem;
-      color: #666;
+      color: var(--color-text-muted);
       margin-bottom: 0.75rem;
       font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
     .prof-item {
       display: flex;
       align-items: center;
       gap: 0.75rem;
       padding: 0.5rem 0;
-      border-bottom: 1px solid #f0f4f8;
+      border-bottom: 1px solid var(--color-bg);
     }
+    .prof-item:last-child { border-bottom: none; }
     .prof-rank {
       font-weight: 700;
-      color: #999;
+      color: var(--color-text-muted);
       font-size: 0.8rem;
-      width: 20px;
+      width: 24px;
     }
     .prof-name {
       flex: 1;
-      font-size: 0.85rem;
-      color: #333;
+      font-size: 0.9rem;
+      color: var(--color-text);
+      font-weight: 500;
     }
     .prof-count {
       font-size: 0.75rem;
       font-weight: 600;
-      padding: 0.2rem 0.5rem;
+      padding: 0.25rem 0.5rem;
       border-radius: 4px;
     }
-    .prof-count.green { background: #dcfce7; color: #166534; }
-    .prof-count.red { background: #fee2e2; color: #991b1b; }
-
-    /* ── Mini KPIs de tasa ── */
-    .mini-kpis {
-      border-top: 1px solid #f0f4f8; padding-top: 1rem;
-      display: flex; flex-direction: column; gap: 0.75rem;
-    }
-    .mini-kpi {}
-    .mini-kpi-bar {
-      height: 10px; background: #f0f4f8; border-radius: 5px;
-      overflow: hidden; margin-bottom: 0.3rem;
-    }
-    .mini-kpi-fill { height: 100%; border-radius: 5px; transition: width 0.6s ease; }
-    .mini-kpi-fill.green { background: #16a34a; }
-    .mini-kpi-fill.red   { background: #dc2626; }
-    .mini-kpi-label {
-      display: flex; align-items: center; gap: 0.4rem;
-      font-size: 0.8rem; color: #555;
-    }
-    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-    .dot.green { background: #16a34a; }
-    .dot.red   { background: #dc2626; }
+    .prof-count.green { background: #f0fdf4; color: #15803d; }
+    .prof-count.red { background: #fef2f2; color: #b91c1c; }
 
     /* ── Estados ── */
     .loading-state, .error-state {
       display: flex; flex-direction: column; align-items: center;
-      padding: 4rem; gap: 1rem; color: #666;
+      padding: 4rem; gap: 1rem; color: var(--color-text-muted);
     }
     .error-state {
-      background: white; border-radius: 14px; border: 1px solid #fee2e2;
+      background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid #fecaca;
     }
     .error-icon { font-size: 3rem; }
     .btn-retry {
-      background: #dc2626; color: white; border: none;
-      padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;
+      background: var(--color-danger); color: white; border: none;
+      padding: 0.5rem 1rem; border-radius: var(--radius-md); cursor: pointer;
     }
     .spinner-lg {
-      width: 40px; height: 40px; border: 3px solid #e0e0e0;
-      border-top-color: #2e75b6; border-radius: 50%;
+      width: 40px; height: 40px; border: 3px solid var(--color-border);
+      border-top-color: var(--color-accent); border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     .empty-state {
       text-align: center; padding: 4rem;
-      background: white; border-radius: 14px;
+      background: var(--color-surface); border-radius: var(--radius-lg);
     }
-    .empty-icon { font-size: 3.5rem; margin-bottom: 1rem; }
-    .empty-state p { color: #666; font-size: 1rem; }
-    .no-data { text-align: center; color: #aaa; padding: 1.5rem; font-style: italic; }
+    .empty-icon { font-size: 3.5rem; margin-bottom: 1rem; opacity: 0.5; }
+    .empty-state p { color: var(--color-text-muted); font-size: 1rem; }
+    .no-data { text-align: center; color: var(--color-text-muted); padding: 1.5rem; font-style: italic; }
   `]
 })
 export class EstadisticasComponent implements OnInit {
@@ -601,6 +645,11 @@ export class EstadisticasComponent implements OnInit {
   // ── Color helpers ────────────────────────────────────────────
   catFill(nombre: string): string {
     return catColor(nombre).fill;
+  }
+
+  // ── Text helpers ──────────────────────────────────────────────
+  abbreviateCategory(nombre: string): string {
+    return CAT_ABBREVIATIONS[nombre] ?? nombre;
   }
 
   // ── Gráfico dona (pie chart SVG) ─────────────────────────────
