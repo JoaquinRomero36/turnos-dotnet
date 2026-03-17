@@ -99,6 +99,7 @@ public record DisponibilidadResponse(
 
 public record CategoriaStats(string Categoria, long Cantidad, double Porcentaje);
 public record FranjaStats   (string Hora,       long Cantidad, double OcupacionPct);
+public record ProfesionalStats(long Id, string NombreCompleto, long Cantidad);
 
 public record EstadisticasResponse(
     long   TotalActivos,
@@ -107,7 +108,9 @@ public record EstadisticasResponse(
     double TasaAsistencia,
     double TasaCancelacion,
     IReadOnlyList<CategoriaStats> PorCategoria,
-    IReadOnlyList<FranjaStats>    PorFranja
+    IReadOnlyList<FranjaStats>    PorFranja,
+    IReadOnlyList<ProfesionalStats> TopProfesionalesCancelados,
+    IReadOnlyList<ProfesionalStats> TopProfesionalesActivos
 );
 
 // ── Error ─────────────────────────────────────────────────────

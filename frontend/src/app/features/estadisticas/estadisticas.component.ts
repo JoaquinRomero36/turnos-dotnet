@@ -46,7 +46,13 @@ function catColor(nombre: string) {
           </div>
         </div>
 
-        @if (loading()) {
+        @if (error()) {
+          <div class="error-state">
+            <div class="error-icon">⚠️</div>
+            <p>{{ error() }}</p>
+            <button class="btn-retry" (click)="cargar()">Reintentar</button>
+          </div>
+        } @else if (loading()) {
           <div class="loading-state">
             <div class="spinner-lg"></div>
             <p>Cargando estadísticas...</p>
@@ -231,82 +237,44 @@ function catColor(nombre: string) {
               </div>
             </div>
 
-            <!-- Tabla de resumen detallado -->
+            <!-- Top 3 Profesionales -->
             <div class="chart-card medium">
               <div class="chart-header">
-                <h2>Resumen Detallado</h2>
-                <span class="chart-sub">Por categoría</span>
+                <h2>Top Profesionales</h2>
+                <span class="chart-sub">Rendimiento en el período</span>
               </div>
-              <div class="detail-table-wrap">
-                <table class="detail-table">
-                  <thead>
-                    <tr>
-                      <th>Categoría</th>
-                      <th>Turnos</th>
-                      <th>%</th>
-                      <th>Ocupación</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @for (cat of stats()!.porCategoria; track cat.categoria) {
-                      <tr>
-                        <td>
-                          <div class="cat-name-cell">
-                            <span class="cat-dot" [style.background]="catFill(cat.categoria)"></span>
-                            {{ cat.categoria }}
-                          </div>
-                        </td>
-                        <td class="num-cell">{{ cat.cantidad }}</td>
-                        <td class="num-cell">{{ cat.porcentaje }}%</td>
-                        <td>
-                          <div class="mini-bar-track">
-                            <div
-                              class="mini-bar-fill"
-                              [style.width.%]="cat.porcentaje"
-                              [style.background]="catFill(cat.categoria)"
-                            ></div>
-                          </div>
-                        </td>
-                      </tr>
+              
+              <div class="profesionales-grid">
+                <!-- Más cancelados -->
+                <div class="prof-group">
+                  <h3>⚠️ Más cancelados</h3>
+                  @if (stats()!.topProfesionalesCancelados.length > 0) {
+                    @for (pro of stats()!.topProfesionalesCancelados; track pro.id; let i = $index) {
+                      <div class="prof-item">
+                        <span class="prof-rank">#{{ i + 1 }}</span>
+                        <span class="prof-name">{{ pro.nombreCompleto }}</span>
+                        <span class="prof-count red">{{ pro.cantidad }} cancelados</span>
+                      </div>
                     }
-                    @if (stats()!.porCategoria.length === 0) {
-                      <tr><td colspan="4" class="no-data">Sin datos</td></tr>
-                    }
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td><strong>Total</strong></td>
-                      <td class="num-cell"><strong>{{ stats()!.totalGeneral }}</strong></td>
-                      <td class="num-cell"><strong>100%</strong></td>
-                      <td></td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-
-              <!-- Mini stats cancelación vs activos -->
-              <div class="mini-kpis">
-                <div class="mini-kpi">
-                  <div class="mini-kpi-bar">
-                    <div
-                      class="mini-kpi-fill green"
-                      [style.width.%]="tasaAsistencia()"
-                    ></div>
-                  </div>
-                  <div class="mini-kpi-label">
-                    <span class="dot green"></span> Activos {{ tasaAsistencia() }}%
-                  </div>
+                  } @else {
+                    <div class="no-data">Sin datos</div>
+                  }
                 </div>
-                <div class="mini-kpi">
-                  <div class="mini-kpi-bar">
-                    <div
-                      class="mini-kpi-fill red"
-                      [style.width.%]="tasaCancelacion()"
-                    ></div>
-                  </div>
-                  <div class="mini-kpi-label">
-                    <span class="dot red"></span> Cancelados {{ tasaCancelacion() }}%
-                  </div>
+
+                <!-- Menos cancelados (más eficientes) -->
+                <div class="prof-group">
+                  <h3>✅ Menos cancelados</h3>
+                  @if (stats()!.topProfesionalesActivos.length > 0) {
+                    @for (pro of stats()!.topProfesionalesActivos; track pro.id; let i = $index) {
+                      <div class="prof-item">
+                        <span class="prof-rank">#{{ i + 1 }}</span>
+                        <span class="prof-name">{{ pro.nombreCompleto }}</span>
+                        <span class="prof-count green">{{ pro.cantidad }} cancelados</span>
+                      </div>
+                    }
+                  } @else {
+                    <div class="no-data">Sin datos</div>
+                  }
                 </div>
               </div>
             </div>
@@ -487,6 +455,45 @@ function catColor(nombre: string) {
     }
     .mini-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
 
+    /* ── Top Profesionales ── */
+    .profesionales-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .prof-group h3 {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+    .prof-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f0f4f8;
+    }
+    .prof-rank {
+      font-weight: 700;
+      color: #999;
+      font-size: 0.8rem;
+      width: 20px;
+    }
+    .prof-name {
+      flex: 1;
+      font-size: 0.85rem;
+      color: #333;
+    }
+    .prof-count {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+    .prof-count.green { background: #dcfce7; color: #166534; }
+    .prof-count.red { background: #fee2e2; color: #991b1b; }
+
     /* ── Mini KPIs de tasa ── */
     .mini-kpis {
       border-top: 1px solid #f0f4f8; padding-top: 1rem;
@@ -509,9 +516,17 @@ function catColor(nombre: string) {
     .dot.red   { background: #dc2626; }
 
     /* ── Estados ── */
-    .loading-state {
+    .loading-state, .error-state {
       display: flex; flex-direction: column; align-items: center;
       padding: 4rem; gap: 1rem; color: #666;
+    }
+    .error-state {
+      background: white; border-radius: 14px; border: 1px solid #fee2e2;
+    }
+    .error-icon { font-size: 3rem; }
+    .btn-retry {
+      background: #dc2626; color: white; border: none;
+      padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;
     }
     .spinner-lg {
       width: 40px; height: 40px; border: 3px solid #e0e0e0;
@@ -531,6 +546,7 @@ function catColor(nombre: string) {
 export class EstadisticasComponent implements OnInit {
   stats = signal<Estadisticas | null>(null);
   loading = signal(false);
+  error = signal<string | null>(null);
 
   desde = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
     .toISOString().split('T')[0];
@@ -547,9 +563,13 @@ export class EstadisticasComponent implements OnInit {
 
   cargar() {
     this.loading.set(true);
+    this.error.set(null);
     this.estadisticaService.getResumen(this.desde, this.hasta).subscribe({
       next: s => { this.stats.set(s); this.loading.set(false); },
-      error: () => this.loading.set(false)
+      error: (err) => {
+        this.loading.set(false);
+        this.error.set(err.error?.mensaje || 'Error al cargar estadísticas');
+      }
     });
   }
 

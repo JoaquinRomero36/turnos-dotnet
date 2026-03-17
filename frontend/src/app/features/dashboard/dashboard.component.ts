@@ -98,83 +98,97 @@ import { Turno, Categoria } from '../../core/models/models';
     </app-layout>
   `,
   styles: [`
-    .dashboard { max-width: 1100px; }
+    .dashboard { max-width: 1200px; margin: 0 auto; }
     .page-header { margin-bottom: 2rem; }
-    .page-header h1 { font-size: 1.75rem; color: #1e3a5f; margin: 0 0 0.25rem; }
-    .page-header p { color: #666; margin: 0; }
+    .page-header h1 { font-size: 2rem; color: var(--color-primary); margin: 0 0 0.25rem; font-weight: 700; }
+    .page-header p { color: var(--color-text-muted); margin: 0; font-size: 0.95rem; }
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
       margin-bottom: 2rem;
     }
     .stat-card {
-      background: white;
-      border-radius: 12px;
-      padding: 1.25rem;
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
       display: flex;
       align-items: center;
       gap: 1rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      border-left: 4px solid;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-border);
+      transition: transform 0.2s, box-shadow 0.2s;
     }
-    .stat-card.blue  { border-color: #2e75b6; }
-    .stat-card.green { border-color: #1f7a4d; }
-    .stat-card.orange{ border-color: #c05500; }
-    .stat-card.purple{ border-color: #5b2d8e; }
-    .stat-icon { font-size: 2rem; }
-    .stat-value { font-size: 2rem; font-weight: 700; color: #1e3a5f; line-height: 1; }
-    .stat-label { font-size: 0.8rem; color: #666; margin-top: 0.2rem; }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .stat-card.blue  { border-top: 4px solid var(--color-accent); }
+    .stat-card.green { border-top: 4px solid var(--color-success); }
+    .stat-card.orange{ border-top: 4px solid var(--color-warning); }
+    .stat-card.purple{ border-top: 4px solid #8b5cf6; }
+    .stat-icon { 
+      width: 48px; height: 48px; border-radius: 12px; 
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+    }
+    .stat-card.blue .stat-icon  { background: #eff6ff; color: var(--color-accent); }
+    .stat-card.green .stat-icon { background: #f0fdf4; color: var(--color-success); }
+    .stat-card.orange .stat-icon { background: #fffbeb; color: var(--color-warning); }
+    .stat-card.purple .stat-icon { background: #f5f3ff; color: #8b5cf6; }
+    
+    .stat-value { font-size: 2rem; font-weight: 700; color: var(--color-primary); line-height: 1; }
+    .stat-label { font-size: 0.85rem; color: var(--color-text-muted); margin-top: 0.2rem; }
 
     .section-title {
-      font-size: 1rem; font-weight: 700; color: #1e3a5f;
-      margin: 1.5rem 0 0.75rem;
+      font-size: 1.1rem; font-weight: 700; color: var(--color-primary);
+      margin: 1.5rem 0 1rem;
     }
     .quick-actions {
       display: flex; flex-wrap: wrap; gap: 0.75rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
     }
     .action-btn {
       display: flex; align-items: center; gap: 0.5rem;
-      padding: 0.7rem 1.25rem; border-radius: 8px;
-      font-weight: 600; text-decoration: none; font-size: 0.9rem;
-      transition: transform 0.15s, box-shadow 0.15s;
+      padding: 0.75rem 1.25rem; border-radius: var(--radius-md);
+      font-weight: 600; text-decoration: none; font-size: 0.95rem;
+      transition: all 0.2s; box-shadow: var(--shadow-sm);
     }
-    .action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-    .action-btn.primary   { background: #2e75b6; color: white; }
-    .action-btn.success   { background: #1f7a4d; color: white; }
-    .action-btn.secondary { background: #5b2d8e; color: white; }
-    .action-btn.info      { background: #c05500; color: white; }
+    .action-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .action-btn.primary   { background: var(--color-accent); color: white; }
+    .action-btn.success   { background: var(--color-success); color: white; }
+    .action-btn.secondary { background: #8b5cf6; color: white; }
+    .action-btn.info      { background: var(--color-warning); color: white; }
 
-    .turnos-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .turnos-list { display: flex; flex-direction: column; gap: 0.75rem; }
     .turno-card {
-      background: white; border-radius: 8px; padding: 0.85rem 1rem;
-      display: flex; align-items: center; gap: 1rem;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      background: var(--color-surface); border-radius: var(--radius-md); 
+      padding: 1rem 1.25rem;
+      display: flex; align-items: center; gap: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-border);
     }
     .turno-hora {
-      font-size: 1.1rem; font-weight: 700; color: #2e75b6;
-      min-width: 55px;
+      font-size: 1.1rem; font-weight: 700; color: var(--color-accent);
+      min-width: 60px;
     }
     .turno-info { flex: 1; }
-    .turno-paciente { font-weight: 600; color: #1e3a5f; font-size: 0.9rem; }
-    .turno-profesional { color: #666; font-size: 0.8rem; }
+    .turno-paciente { font-weight: 600; color: var(--color-primary); font-size: 0.95rem; }
+    .turno-profesional { color: var(--color-text-muted); font-size: 0.85rem; margin-top: 2px; }
     .turno-cat {
-      padding: 0.25rem 0.6rem; border-radius: 20px;
-      font-size: 0.75rem; font-weight: 600;
+      padding: 0.3rem 0.7rem; border-radius: 20px;
+      font-size: 0.8rem; font-weight: 600;
     }
-    .cat-1 { background: #dbeafe; color: #1e40af; }
-    .cat-2 { background: #dcfce7; color: #166534; }
-    .cat-3 { background: #fce7f3; color: #831843; }
-    .cat-4 { background: #fef3c7; color: #92400e; }
+    .cat-1 { background: #eff6ff; color: #1e40af; }
+    .cat-2 { background: #f0fdf4; color: #166534; }
+    .cat-3 { background: #fdf2f8; color: #9d174d; }
+    .cat-4 { background: #fffbeb; color: #92400e; }
 
     .empty-state {
       text-align: center; padding: 3rem;
-      background: white; border-radius: 12px;
+      background: var(--color-surface); border-radius: var(--radius-lg);
+      border: 1px dashed var(--color-border);
     }
-    .empty-icon { font-size: 3rem; margin-bottom: 0.5rem; }
-    .empty-state p { color: #666; }
+    .empty-icon { font-size: 3rem; margin-bottom: 0.5rem; opacity: 0.5; }
+    .empty-state p { color: var(--color-text-muted); }
   `]
 })
 export class DashboardComponent implements OnInit {

@@ -20,9 +20,9 @@ public record PacienteRequest(
 public record CrearTurnoRequest(
     [Required] long            ProfesionalId,
     [Required] long            CategoriaId,
-    [Required] DateTime        FechaHora,
+    [Required] string        FechaHora,
     [Required] PacienteRequest Paciente,
-               string?         DescripcionProblema
+            string?         DescripcionProblema
 );
 
 public record CrearProfesionalRequest(

@@ -11,7 +11,7 @@ import { environment } from '../../../environments/environment';
 // ─── TurnoService ────────────────────────────────────────────
 @Injectable({ providedIn: 'root' })
 export class TurnoService {
-  private base = `${environment.apiUrl}/turnos`;
+  private base = `${environment.apiUrl}/api/turnos`;
 
   constructor(private http: HttpClient) {}
 
@@ -88,7 +88,7 @@ export class TurnoService {
 // ─── EstadisticaService ──────────────────────────────────────
 @Injectable({ providedIn: 'root' })
 export class EstadisticaService {
-  private base = `${environment.apiUrl}/estadisticas`;
+  private base = `${environment.apiUrl}/api/estadisticas`;
 
   constructor(private http: HttpClient) {}
 

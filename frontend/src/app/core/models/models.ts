@@ -40,8 +40,10 @@ export interface Estadisticas {
   totalActivos: number; totalCancelados: number; totalGeneral: number;
   tasaAsistencia: number; tasaCancelacion: number;
   porCategoria: CategoriaStats[]; porFranja: FranjaStats[];
+  topProfesionalesCancelados: ProfesionalStats[]; topProfesionalesActivos: ProfesionalStats[];
 }
 export interface CategoriaStats { categoria: string; cantidad: number; porcentaje: number; }
 export interface FranjaStats    { hora: string; cantidad: number; ocupacionPct: number; }
+export interface ProfesionalStats { id: number; nombreCompleto: string; cantidad: number; }
 export interface ProfesionalLibre { id: number; nombre: string; apellido: string; nombreCompleto: string; matricula: string; }
 export interface ApiError { error: string; mensaje: string; detalles?: Record<string, string>; timestamp: string; }
