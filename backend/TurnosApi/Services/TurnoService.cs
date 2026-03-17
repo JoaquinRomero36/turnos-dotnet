@@ -13,7 +13,7 @@ public interface ITurnoService
     Task<List<TurnoResponse>> GetCalendarioAsync(DateOnly fechaInicio, DateOnly fechaFin, long? categoriaId, Usuario usuario);
     Task<TurnoResponse> GetByIdAsync(long id);
     Task<TurnoResponse> CrearAsync(CrearTurnoRequest req, Usuario usuario);
-    Task<TurnoResponse> CancelarAsync(long id, Usuario usuario);
+    Task<TurnoResponse> CancelarAsync(long id, Usuario usuario, string motivo);
     Task<DisponibilidadResponse> GetDisponibilidadAsync(DateOnly fecha, long categoriaId);
 }
 
@@ -132,8 +132,11 @@ public class TurnoService(AppDbContext db) : ITurnoService
     }
 
     // ── Cancelar ──────────────────────────────────────────────
-    public async Task<TurnoResponse> CancelarAsync(long id, Usuario usuarioActual)
+    public async Task<TurnoResponse> CancelarAsync(long id, Usuario usuarioActual, string motivo)
     {
+        if (string.IsNullOrWhiteSpace(motivo))
+            throw new BusinessException("El motivo de cancelación es obligatorio");
+
         var turno = await IncluirNavegaciones().FirstOrDefaultAsync(t => t.Id == id)
                     ?? throw new NotFoundException($"Turno {id} no encontrado");
 
@@ -143,16 +146,17 @@ public class TurnoService(AppDbContext db) : ITurnoService
         if (usuarioActual.Rol == Rol.Profesional)
         {
             var prof = await db.Profesionales
-                           .FirstOrDefaultAsync(p => p.UsuarioId == usuarioActual.Id)
-                        ?? throw new NotFoundException("Perfil de profesional no encontrado");
+                               .FirstOrDefaultAsync(p => p.UsuarioId == usuarioActual.Id)
+                            ?? throw new NotFoundException("Perfil de profesional no encontrado");
 
             if (turno.ProfesionalId != prof.Id)
                 throw new ForbiddenException("No puede cancelar turnos de otro profesional");
         }
 
-        turno.Estado         = EstadoTurno.Cancelado;
-        turno.CanceladoPorId = usuarioActual.Id;
-        turno.CanceladoAt    = DateTime.UtcNow;
+        turno.Estado           = EstadoTurno.Cancelado;
+        turno.CanceladoPorId   = usuarioActual.Id;
+        turno.CanceladoAt      = DateTime.UtcNow;
+        turno.MotivoCancelacion = motivo;
 
         await db.SaveChangesAsync();
         return TurnoResponse.From(turno);

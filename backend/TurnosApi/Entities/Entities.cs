@@ -76,6 +76,7 @@ public class Turno
     public long        CategoriaId         { get; set; }
     public DateTime    FechaHora           { get; set; }
     public string?     DescripcionProblema { get; set; }
+    public string?     MotivoCancelacion   { get; set; } // Nuevo campo
     public EstadoTurno Estado              { get; set; } = EstadoTurno.Activo;
     public long?       CreadoPorId         { get; set; }
     public long?       CanceladoPorId      { get; set; }

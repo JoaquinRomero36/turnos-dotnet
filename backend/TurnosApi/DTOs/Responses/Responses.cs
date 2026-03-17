@@ -56,6 +56,7 @@ public record TurnoResponse(
     DateTime            FechaHora,
     string              Estado,
     string?             DescripcionProblema,
+    string?             MotivoCancelacion,
     DateTime            CreatedAt,
     DateTime?           CanceladoAt,
     TurnoCategoriaDto   Categoria,
@@ -66,7 +67,7 @@ public record TurnoResponse(
 )
 {
     public static TurnoResponse From(Turno t) => new(
-        t.Id, t.FechaHora, t.Estado.ToString(), t.DescripcionProblema, t.CreatedAt, t.CanceladoAt,
+        t.Id, t.FechaHora, t.Estado.ToString(), t.DescripcionProblema, t.MotivoCancelacion, t.CreatedAt, t.CanceladoAt,
         new TurnoCategoriaDto(t.Categoria.Id, t.Categoria.Nombre),
         new TurnoProfesionalDto(t.Profesional.Id, t.Profesional.Nombre, t.Profesional.Apellido,
             t.Profesional.NombreCompleto, t.Profesional.Matricula),

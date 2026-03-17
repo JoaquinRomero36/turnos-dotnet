@@ -18,7 +18,7 @@ export interface CrearProfesionalRequest {
 }
 export interface Turno {
   id: number; fechaHora: string; estado: 'Activo' | 'Cancelado';
-  descripcionProblema?: string; createdAt: string; canceladoAt?: string;
+  descripcionProblema?: string; motivoCancelacion?: string; createdAt: string; canceladoAt?: string;
   categoria: { id: number; nombre: string; };
   profesional: { id: number; nombre: string; apellido: string; nombreCompleto: string; matricula: string; };
   paciente: { id: number; nombre: string; apellido: string; nombreCompleto: string; dni: string; telefono: string; };

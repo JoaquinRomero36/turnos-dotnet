@@ -31,8 +31,8 @@ export class TurnoService {
     return this.http.post<Turno>(this.base, request);
   }
 
-  cancelar(id: number): Observable<Turno> {
-    return this.http.patch<Turno>(`${this.base}/${id}/cancelar`, {});
+  cancelar(id: number, motivo: string): Observable<Turno> {
+    return this.http.patch<Turno>(`${this.base}/${id}/cancelar`, { motivo });
   }
 
   getDisponibles(fecha: string, categoriaId: number): Observable<Disponibilidad> {

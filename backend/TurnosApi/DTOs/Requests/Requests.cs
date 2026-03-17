@@ -33,3 +33,8 @@ public record CrearProfesionalRequest(
     [Required] string Username,
                string? Password
 );
+
+public record CancelarTurnoRequest(
+    [Required(ErrorMessage = "El motivo de cancelación es obligatorio")]
+    string Motivo
+);

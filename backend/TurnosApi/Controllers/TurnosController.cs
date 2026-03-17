@@ -44,6 +44,6 @@ public class TurnosController(ITurnoService turnoService, IAuthService authServi
 
     /// <summary>Cancelar un turno</summary>
     [HttpPatch("{id:long}/cancelar")]
-    public async Task<IActionResult> Cancelar(long id) =>
-        Ok(await turnoService.CancelarAsync(id, await UsuarioActualAsync()));
+    public async Task<IActionResult> Cancelar(long id, [FromBody] CancelarTurnoRequest req) =>
+        Ok(await turnoService.CancelarAsync(id, await UsuarioActualAsync(), req.Motivo));
 }
