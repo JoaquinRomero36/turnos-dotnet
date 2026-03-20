@@ -29,6 +29,22 @@ public class TurnosController(ITurnoService turnoService, IAuthService authServi
         [FromQuery] long     categoriaId) =>
         Ok(await turnoService.GetDisponibilidadAsync(fecha, categoriaId));
 
+    /// <summary>Listado de cancelaciones con filtros y paginación</summary>
+    [HttpGet("cancelaciones")]
+    public async Task<IActionResult> GetCancelaciones(
+        [FromQuery] long? profesionalId = null,
+        [FromQuery] long? categoriaId = null,
+        [FromQuery] int skip = 0,
+        [FromQuery] int take = 10)
+    {
+        // Solo secretarios pueden ver todas las cancelaciones
+        var usuario = await UsuarioActualAsync();
+        if (usuario.Rol != Rol.Secretario)
+            return Forbid();
+
+        return Ok(await turnoService.GetCancelacionesAsync(profesionalId, categoriaId, skip, take));
+    }
+
     /// <summary>Detalle de un turno por ID</summary>
     [HttpGet("{id:long}")]
     public async Task<IActionResult> GetById(long id) =>

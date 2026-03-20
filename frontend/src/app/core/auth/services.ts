@@ -41,6 +41,19 @@ export class TurnoService {
       .set('categoriaId', categoriaId);
     return this.http.get<Disponibilidad>(`${this.base}/disponibles`, { params });
   }
+
+  getCancelaciones(profesionalId?: number, categoriaId?: number, skip: number = 0, take: number = 10): Observable<Turno[]> {
+    let params = new HttpParams()
+      .set('skip', skip.toString())
+      .set('take', take.toString());
+    if (profesionalId) {
+      params = params.set('profesionalId', profesionalId.toString());
+    }
+    if (categoriaId) {
+      params = params.set('categoriaId', categoriaId.toString());
+    }
+    return this.http.get<Turno[]>(`${this.base}/cancelaciones`, { params });
+  }
 }
 
   // ─── ProfesionalService ──────────────────────────────────────

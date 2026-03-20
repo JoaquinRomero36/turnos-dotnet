@@ -15,6 +15,7 @@ public interface ITurnoService
     Task<TurnoResponse> CrearAsync(CrearTurnoRequest req, Usuario usuario);
     Task<TurnoResponse> CancelarAsync(long id, Usuario usuario, string motivo);
     Task<DisponibilidadResponse> GetDisponibilidadAsync(DateOnly fecha, long categoriaId);
+    Task<List<TurnoResponse>> GetCancelacionesAsync(long? profesionalId, long? categoriaId, int skip, int take);
 }
 
 public class TurnoService(AppDbContext db) : ITurnoService
@@ -251,5 +252,35 @@ public class TurnoService(AppDbContext db) : ITurnoService
         db.Pacientes.Add(nuevo);
         await db.SaveChangesAsync();
         return nuevo;
+    }
+
+    public async Task<List<TurnoResponse>> GetCancelacionesAsync(long? profesionalId, long? categoriaId, int skip, int take)
+    {
+        Console.WriteLine($"GetCancelacionesAsync: profesionalId={profesionalId}, categoriaId={categoriaId}, skip={skip}, take={take}");
+        
+        var query = IncluirNavegaciones()
+            .Where(t => t.Estado == EstadoTurno.Cancelado);
+
+        if (profesionalId.HasValue)
+        {
+            query = query.Where(t => t.ProfesionalId == profesionalId.Value);
+            Console.WriteLine($"Filtrando por profesional: {profesionalId.Value}");
+        }
+
+        if (categoriaId.HasValue)
+        {
+            query = query.Where(t => t.CategoriaId == categoriaId.Value);
+            Console.WriteLine($"Filtrando por categoría: {categoriaId.Value}");
+        }
+
+        var turnos = await query
+            .OrderByDescending(t => t.CanceladoAt) // Las más recientes primero
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync();
+
+        Console.WriteLine($"Resultados encontrados: {turnos.Count}");
+        
+        return turnos.Select(TurnoResponse.From).ToList();
     }
 }
