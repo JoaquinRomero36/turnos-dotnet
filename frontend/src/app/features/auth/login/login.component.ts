@@ -12,9 +12,8 @@ import { AuthService } from '../../../core/auth/auth.service';
       <div class="login-card">
         <div class="login-header">
           <div class="logo-icon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-            </svg>
+            <!-- Logo de la escuela -->
+            <img src="assets/LogoInicio.jpeg" alt="Logo Escuela" class="login-logo">
           </div>
           <h1>Centro de Salud</h1>
           <p>Sistema de Gestión de Turnos</p>
@@ -125,6 +124,13 @@ import { AuthService } from '../../../core/auth/auth.service';
       color: var(--color-accent);
       margin-bottom: 1rem;
       display: inline-block;
+    }
+    .login-logo {
+      width: 160px;
+      height: 160px;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     .login-header h1 { 

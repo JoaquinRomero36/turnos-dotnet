@@ -11,10 +11,8 @@ import { AuthService } from '../../core/auth/auth.service';
       <!-- Sidebar -->
       <aside class="sidebar">
         <div class="sidebar-logo">
-          <!-- Logo SVG -->
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-          </svg>
+          <!-- Logo de la escuela -->
+          <img src="assets/LogoSidebar.jpeg" alt="Logo Escuela" class="logo-img">
           <div>
             <div class="logo-title">Sistema Turnos</div>
             <div class="logo-sub">Centro de Salud</div>
@@ -86,6 +84,14 @@ import { AuthService } from '../../core/auth/auth.service';
       display: flex; align-items: center; gap: 0.75rem;
       padding: 1.5rem 1.25rem;
       border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .logo-img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 4px;
     }
     .logo-title { color: white; font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px; }
     .logo-sub { color: rgba(255,255,255,0.6); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
