@@ -11,20 +11,36 @@ import { Turno, Profesional, Categoria } from '../../core/models/models';
   template: `
     <app-layout>
       <div class="page-header">
-        <h2>Historial de Cancelaciones</h2>
-        <div class="filters">
-          <select [(ngModel)]="filtroProfesional" (ngModelChange)="cargarCancelaciones()" class="filter-select">
-            <option [ngValue]="null">Todos los profesionales</option>
-            @for (prof of profesionales(); track prof.id) {
-              <option [ngValue]="prof.id">{{ prof.nombreCompleto }}</option>
-            }
-          </select>
-          <select [(ngModel)]="filtroCategoria" (ngModelChange)="cargarCancelaciones()" class="filter-select">
-            <option [ngValue]="null">Todas las categorías</option>
-            @for (cat of categorias(); track cat.id) {
-              <option [ngValue]="cat.id">{{ cat.nombre }}</option>
-            }
-          </select>
+        <div class="header-title">
+          <h2>Historial de Cancelaciones</h2>
+          <p class="subtitle">Gestión y seguimiento de turnos cancelados</p>
+        </div>
+        <div class="filters-container">
+          <div class="filter-box">
+            <label class="filter-label">
+              Profesional
+            </label>
+            <select [(ngModel)]="filtroProfesional" (ngModelChange)="cargarCancelaciones()" class="filter-select">
+              <option [ngValue]="null">Todos los profesionales</option>
+              @for (prof of profesionales(); track prof.id) {
+                <option [ngValue]="prof.id">{{ prof.nombreCompleto }}</option>
+              }
+            </select>
+          </div>
+          <div class="filter-box">
+            <label class="filter-label">
+              Categoría
+            </label>
+            <select [(ngModel)]="filtroCategoria" (ngModelChange)="cargarCancelaciones()" class="filter-select">
+              <option [ngValue]="null">Todas las categorías</option>
+              @for (cat of categorias(); track cat.id) {
+                <option [ngValue]="cat.id">{{ cat.nombre }}</option>
+              }
+            </select>
+          </div>
+          @if (filtroProfesional || filtroCategoria) {
+            <button class="btn-clear" (click)="limpiarFiltros()">✕</button>
+          }
         </div>
       </div>
 
@@ -89,15 +105,93 @@ import { Turno, Profesional, Categoria } from '../../core/models/models';
   `,
   styles: [`
     .page-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 1.5rem 2rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    .header-title h2 {
+      margin: 0;
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .subtitle {
+      margin: 0.25rem 0 0;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9rem;
+    }
+    .filters-container {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-end;
+    }
+    .filter-box {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .filter-label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .filter-icon {
+      font-size: 0.9rem;
     }
     .filter-select {
+      padding: 0.6rem 2rem 0.6rem 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.95);
+      font-size: 0.9rem;
+      min-width: 200px;
+      cursor: pointer;
+      color: #333;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 0.5rem center;
+      background-size: 1em;
+      transition: all 0.2s ease;
+    }
+    .filter-select:hover {
+      border-color: white;
+      background-color: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .filter-select:focus {
+      outline: none;
+      border-color: white;
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+    }
+    .filter-select option {
       padding: 0.5rem;
-      border-radius: 4px;
-      border: 1px solid #ccc;
+    }
+    .btn-clear {
+      padding: 0.6rem 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      line-height: 1;
+    }
+    .btn-clear:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: white;
     }
     .table-container {
       overflow-x: auto;
@@ -206,6 +300,13 @@ export class CancelacionesComponent implements OnInit {
         },
         error: () => this.loading.set(false)
       });
+  }
+
+  limpiarFiltros() {
+    this.filtroProfesional = null;
+    this.filtroCategoria = null;
+    this.skip.set(0);
+    this.cargarCancelaciones();
   }
 
   paginaAnterior() {

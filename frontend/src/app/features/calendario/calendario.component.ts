@@ -97,19 +97,52 @@ function catColor(nombre: string) {
               <button class="btn-close" (click)="cerrarDetalle()">✕</button>
             </div>
             <div class="modal-body">
-              <div class="detail-row"><label>Paciente:</label><span>{{ turnoDetalle()!.paciente.nombreCompleto }}</span></div>
-              <div class="detail-row"><label>DNI:</label><span>{{ turnoDetalle()!.paciente.dni }}</span></div>
-              <div class="detail-row"><label>Teléfono:</label><span>{{ turnoDetalle()!.paciente.telefono }}</span></div>
-              <div class="detail-row"><label>Profesional:</label><span>{{ turnoDetalle()!.profesional.nombreCompleto }}</span></div>
-              <div class="detail-row"><label>Categoría:</label><span>{{ turnoDetalle()!.categoria.nombre }}</span></div>
-              <div class="detail-row"><label>Fecha y hora:</label><span>{{ formatFechaHora(turnoDetalle()!.fechaHora) }}</span></div>
-              @if (turnoDetalle()!.estado === 'Activo' && turnoDetalle()!.descripcionProblema) {
-                <div class="detail-row"><label>Motivo:</label><span>{{ turnoDetalle()!.descripcionProblema }}</span></div>
+              @if (!mostrandoMotivoCancelacion()) {
+                <div class="detail-row"><label>Paciente:</label><span>{{ turnoDetalle()!.paciente.nombreCompleto }}</span></div>
+                <div class="detail-row"><label>DNI:</label><span>{{ turnoDetalle()!.paciente.dni }}</span></div>
+                <div class="detail-row"><label>Teléfono:</label><span>{{ turnoDetalle()!.paciente.telefono }}</span></div>
+                <div class="detail-row"><label>Profesional:</label><span>{{ turnoDetalle()!.profesional.nombreCompleto }}</span></div>
+                <div class="detail-row"><label>Categoría:</label><span>{{ turnoDetalle()!.categoria.nombre }}</span></div>
+                <div class="detail-row"><label>Fecha y hora:</label><span>{{ formatFechaHora(turnoDetalle()!.fechaHora) }}</span></div>
+                @if (turnoDetalle()!.estado === 'Activo' && turnoDetalle()!.descripcionProblema) {
+                  <div class="detail-row"><label>Motivo consulta:</label><span>{{ turnoDetalle()!.descripcionProblema }}</span></div>
+                }
+                @if (turnoDetalle()!.estado === 'Cancelado' && turnoDetalle()!.motivoCancelacion) {
+                  <div class="detail-row"><label>Motivo cancelación:</label><span>{{ turnoDetalle()!.motivoCancelacion }}</span></div>
+                }
+                <div class="detail-row"><label>Registrado por:</label><span>{{ turnoDetalle()!.creadoPor }}</span></div>
+              } @else {
+                <!-- Formulario de cancelación -->
+                <div class="cancel-form-container">
+                  <div class="cancel-header">
+                    <span class="cancel-icon">⚠️</span>
+                    <div>
+                      <h3>Cancelar turno</h3>
+                      <p class="cancel-subtitle">Esta acción no se puede deshacer</p>
+                    </div>
+                  </div>
+                  
+                  <div class="cancel-summary">
+                    <div><strong>Paciente:</strong> {{ turnoDetalle()!.paciente.nombreCompleto }}</div>
+                    <div><strong>Profesional:</strong> {{ turnoDetalle()!.profesional.nombreCompleto }}</div>
+                    <div><strong>Fecha:</strong> {{ formatFechaHora(turnoDetalle()!.fechaHora) }}</div>
+                  </div>
+
+                  <div class="cancel-input-group">
+                    <label for="motivoCancelacion">Motivo de cancelación <span class="required">*</span></label>
+                    <textarea 
+                      id="motivoCancelacion"
+                      [(ngModel)]="motivoCancelacionValue"
+                      placeholder="Ejemplo: Paciente no asistió, emergencia familiar, error de carga..."
+                      rows="3"
+                      maxlength="250"
+                      class="cancel-textarea"
+                    ></textarea>
+                    <div class="char-counter">{{ motivoCancelacionValue.length }}/250</div>
+                    <p class="cancel-hint">Este motivo quedará registrado para auditoría.</p>
+                  </div>
+                </div>
               }
-              @if (turnoDetalle()!.estado === 'Cancelado' && turnoDetalle()!.motivoCancelacion) {
-                <div class="detail-row"><label>Motivo cancelación:</label><span>{{ turnoDetalle()!.motivoCancelacion }}</span></div>
-              }
-              <div class="detail-row"><label>Registrado por:</label><span>{{ turnoDetalle()!.creadoPor }}</span></div>
             </div>
             <div class="modal-footer">
               @if (!mostrandoMotivoCancelacion() && turnoDetalle()!.estado === 'Activo') {
@@ -118,18 +151,10 @@ function catColor(nombre: string) {
                 </button>
                 <button class="btn-secondary" (click)="cerrarDetalle()">Cerrar</button>
               } @else if (turnoDetalle()!.estado === 'Activo') {
-                <div class="cancel-reason-form">
-                  <input
-                    type="text"
-                    [(ngModel)]="motivoCancelacionValue"
-                    placeholder="Motivo de cancelación (obligatorio)"
-                    class="input-cancel-reason"
-                  />
-                  <button class="btn-cancelar-turno" (click)="confirmarCancelacion()" [disabled]="!motivoCancelacionValue.trim()">
-                    Confirmar cancelación
-                  </button>
-                  <button class="btn-secondary" (click)="cancelarCancelacion()">Volver</button>
-                </div>
+                <button class="btn-secondary" (click)="cancelarCancelacion()">← Volver</button>
+                <button class="btn-cancelar-turno" (click)="confirmarCancelacion()" [disabled]="!motivoCancelacionValue.trim()">
+                  Confirmar cancelación
+                </button>
               } @else {
                 <button class="btn-secondary" (click)="cerrarDetalle()">Cerrar</button>
               }
@@ -219,20 +244,71 @@ function catColor(nombre: string) {
     </app-layout>
   `,
   styles: [`
-    /* ... (styles from previous component) ... */
-    /* Agregando estilos específicos para el nuevo formulario de cancelación */
-    .cancel-reason-form {
-      display: flex;
-      gap: 0.5rem;
-      width: 100%;
-      align-items: center;
+    /* ── Formulario de cancelación mejorado ── */
+    .cancel-form-container {
+      padding: 0.5rem;
     }
-    .input-cancel-reason {
-      flex: 1;
-      padding: 0.5rem 0.75rem;
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
+    .cancel-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #fee2e2;
+    }
+    .cancel-icon { font-size: 1.75rem; }
+    .cancel-header h3 {
+      margin: 0; font-size: 1.1rem; color: #dc2626;
+    }
+    .cancel-subtitle {
+      margin: 0; font-size: 0.85rem; color: #666;
+    }
+    .cancel-summary {
+      background: #f8fafc;
+      padding: 0.75rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-bottom: 1.25rem;
+      line-height: 1.6;
+      color: #475569;
+    }
+    .cancel-input-group {
+      margin-bottom: 0.5rem;
+    }
+    .cancel-input-group label {
+      display: block;
       font-size: 0.9rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 0.4rem;
+    }
+    .required { color: #dc2626; }
+    .cancel-textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      resize: vertical;
+      min-height: 80px;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+    .cancel-textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+    .char-counter {
+      text-align: right;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 0.25rem;
+    }
+    .cancel-hint {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin: 0.5rem 0 0;
     }
     /* Estilos existentes del calendario... */
     :host {
